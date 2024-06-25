@@ -1,0 +1,1779 @@
+## Cleaning the File 
+##Reading the file and filtering the required Features:
+import pandas as pd
+
+df = pd.read_csv("ESS6e02_6.csv")
+df.info()
+
+##===============================================Separate the Workers
+
+df = df[df['pdwrk'] == 1]
+df.info()
+
+#================Filtering the Required Features based on the Article
+
+columns_to_keep = ['wkhtot', 'nacer2', 'hincsrca', 'hinctnta', 'hincfel', 'emplrel', 'gndr', 'agea',
+    'rshpsts', 'chldhm', 'health', 'cntry', 'stflife', 'happy', 'ctzcntr', 'rehlppl', 'hhmmb', 'domicil',
+    'edulvlb', 'estsz', 'jbspv', 'wkdcorga', 'iorgact', 'pdwrkp', 'hswrkp', 'stfjb', 'fltanx',
+    'slprl', 'wkhct','stfjbot','tmdotwa','deaimpp','tporgwk'
+]
+df = df[columns_to_keep]
+df.head()
+df.info()
+
+#=========================================Convert the Files to the CSV
+
+df.to_csv('Filtered.csv',header=True)
+
+#============================Working on filtered dataset with df name
+
+df = pd.read_csv('Filtered.csv')
+
+#==========================================Check the Unique Values
+
+pd.set_option('display.max_rows', 28000)
+for column in df.columns:
+    print('Column: {} - Unique Value Count: {}'.format(column, df[column].nunique()))
+
+df=df.drop('Unnamed: 0',axis=1)
+df.columns
+
+##====================Converting numerically coded data to categorical 
+#1- nacer2: What does/did the firm/organisation you work/worked for 
+#mainly make or do?
+#---------------------------------------------------------------------
+import numpy as np
+nacer2_mapping = {
+        1: "Primary Sector",
+        2: "Primary Sector",
+        3: "Primary Sector",
+        5: "Primary Sector",
+        6: "Primary Sector",
+        7: "Primary Sector",
+        8: "Primary Sector",
+        9: "Primary Sector",
+        10: "Manufacturing Sector",
+        11: "Manufacturing Sector",
+        12: "Manufacturing Sector",
+        13: "Manufacturing Sector",
+        14: "Manufacturing Sector",
+        15: "Manufacturing Sector",
+        16: "Manufacturing Sector",
+        17: "Manufacturing Sector",
+        18: "Manufacturing Sector",
+        19: "Manufacturing Sector",
+        20: "Manufacturing Sector",
+        21: "Manufacturing Sector",
+        22: "Manufacturing Sector",
+        23: "Manufacturing Sector",
+        24: "Manufacturing Sector",
+        25: "Manufacturing Sector",
+        26: "Manufacturing Sector",
+        27: "Manufacturing Sector",
+        28: "Manufacturing Sector",
+        29: "Manufacturing Sector",
+        30: "Manufacturing Sector",
+        31: "Manufacturing Sector",
+        32: "Manufacturing Sector",
+        41: "Construction Sector",
+        42: "Construction Sector",
+        43: "Construction Sector",
+        45: "Wholesale and Retail Trade",
+        46: "Wholesale and Retail Trade",
+        47: "Wholesale and Retail Trade",
+        49: "Transportation and Storage",
+        50: "Transportation and Storage",
+        51: "Transportation and Storage",
+        52: "Transportation and Storage",
+        53: "Transportation and Storage",
+        59: "Information and Communication",
+        60: "Information and Communication",
+        61: "Information and Communication",
+        62: "Information and Communication",
+        63: "Information and Communication",
+        64: "Financial and Insurance Activities",
+        65: "Financial and Insurance Activities",
+        66: "Financial and Insurance Activities",
+        68: "Professional, Scientific, and Technical Activities",
+        69: "Professional, Scientific, and Technical Activities",
+        70: "Professional, Scientific, and Technical Activities",
+        71: "Professional, Scientific, and Technical Activities",
+        72: "Professional, Scientific, and Technical Activities",
+        73: "Professional, Scientific, and Technical Activities",
+        74: "Professional, Scientific, and Technical Activities",
+        75: "Administrative and Support Service Activities",
+        77: "Administrative and Support Service Activities",
+        78: "Administrative and Support Service Activities",
+        79: "Administrative and Support Service Activities",
+        80: "Administrative and Support Service Activities",
+        81: "Administrative and Support Service Activities",
+        82: "Administrative and Support Service Activities",
+        84: "Public Administration, Education, and Healthcare",
+        85: "Public Administration, Education, and Healthcare",
+        86: "Public Administration, Education, and Healthcare",
+        87: "Public Administration, Education, and Healthcare",
+        88: "Public Administration, Education, and Healthcare",
+        90: "Arts, Entertainment, and Other Services",
+        91: "Arts, Entertainment, and Other Services",
+        92: "Arts, Entertainment, and Other Services",
+        93: "Arts, Entertainment, and Other Services",
+        94: "Arts, Entertainment, and Other Services",
+        95: "Arts, Entertainment, and Other Services",
+        96: "Arts, Entertainment, and Other Services",
+        97: "Arts, Entertainment, and Other Services",
+        98: "Arts, Entertainment, and Other Services",
+        99: "Arts, Entertainment, and Other Services",
+    666: "Not applicable",
+    777: None,
+    888: None,
+    999: None
+}
+
+df['nacer2'] = df['nacer2'].map(nacer2_mapping)
+df['nacer2'] = df['nacer2'].astype("category")
+
+print(df['nacer2'].unique())
+print(df['nacer2'].dtype)
+
+#--------------------------------------------------------------------
+#2- tporgwk: Which of the types of organisation on this card do/did 
+#you work for?
+#--------------------------------------------------------------------
+
+tporgwk_mapping = {
+    1: "Central or local government",
+    2: "Other public sector (such as education and health)",
+    3: "A state owned enterprise",
+    4: "A private firm",
+    5: "Self employed",
+    6: "Other",
+    66: None,
+    77: None,
+    88: None,
+    99: None
+}
+
+df['tporgwk'] = df['tporgwk'].map(tporgwk_mapping)
+df['tporgwk'] = df['tporgwk'].astype('category')
+
+print(df['tporgwk'].unique())
+print(df['tporgwk'].dtype)
+
+#--------------------------------------------------------------------
+#3- hincsrca: Please consider the income of all household members and 
+#any income which may be received by the household as a whole. What 
+#is the main source of income in your household?
+#--------------------------------------------------------------------
+
+hincsrca_mapping = {
+    1: "Wages or salaries",
+    2: "Income from self-employment (excluding farming)",
+    3: "Income from farming",
+    4: "Pensions",
+    5: "Unemployment/redundancy benefit",
+    6: "Any other social benefits or grants",
+    7: "Income from investments, savings etc",
+    77: None,
+    88: None,
+    99: None
+}
+
+df['hincsrca'] = df['hincsrca'].map(hincsrca_mapping)
+df['hincsrca'] = df['hincsrca'].astype('category')
+
+print(df['hincsrca'].unique())
+print(df['hincsrca'].dtype)
+
+#--------------------------------------------------------------------
+#4- hinctnta: Using this card, please tell me which letter describes 
+#your household's total income, after tax and compulsory deductions, 
+#from all sources? If you don't know the exact figure, please give an 
+#estimate. Use the part of the card that you know best: weekly, 
+#monthly or annual income.
+#--------------------------------------------------------------------
+
+hinctnta_mapping = {
+    1: 'J - 1st decile',
+    2: 'R - 2nd decile',
+    3: 'C - 3rd decile',
+    4: 'M - 4th decile',
+    5: 'F - 5th decile',
+    6: 'S - 6th decile',
+    7: 'K - 7th decile',
+    8: 'P - 8th decile',
+    9: 'D - 9th decile',
+    10: 'H - 10th decile',
+    77: None,
+    88: None,
+    99: None
+}
+
+
+df['hinctnta'] = df['hinctnta'].map(hinctnta_mapping)
+df['hinctnta'] = df['hinctnta'].astype('category')
+
+print(df['hinctnta'].unique())
+print(df['hinctnta'].dtype)
+
+#--------------------------------------------------------------------
+#5- hincfel: Which of the descriptions on this card comes closest to 
+#how you feel about your household's income nowadays?
+#--------------------------------------------------------------------
+
+hincfel_mapping = {
+    1: 'Living comfortably on present income',
+    2: 'Coping on present income',
+    3: 'Difficult on present income',
+    4: 'Very difficult on present income',
+    7: None,  # Refusal treated as missing
+    8: None,  # Don't know treated as missing
+    9: None   # No answer treated as missing
+}
+
+df['hincfel'] = df['hincfel'].map(hincfel_mapping)
+df['hincfel'] = df['hincfel'].astype('category')
+
+
+print(df['hincfel'].unique())
+print(df['hincfel'].dtype)
+
+#--------------------------------------------------------------------
+#6- emplrel : In your main job are/were you...
+#--------------------------------------------------------------------
+
+emplrel_mapping={
+    1:	"Employee",
+    2:	"Self-employed",
+    3:	"Working for own family business",
+    6:	None,
+    7:	None,
+    8:	None,
+    9:	None
+}
+
+df['emplrel']=df['emplrel'].map(emplrel_mapping)
+df['emplrel']=df['emplrel'].astype("category")
+
+print(df['emplrel'].unique())
+print(df['emplrel'].dtype)
+
+#--------------------------------------------------------------------
+#7_ gndr: Gender
+#--------------------------------------------------------------------
+gndr_mapping={
+    1: "Male",
+    2: "Female",
+    9: None
+}
+df['gndr']=df['gndr'].map(gndr_mapping)
+df['gndr']=df['gndr'].astype("category")
+
+print(df['gndr'].unique())
+print(df['gndr'].dtype)
+
+#--------------------------------------------------------------------
+#8_ rshpsts - Relationship with husband/wife/partner currently living
+# with:
+#You just told me that you live with your husband/wife/partner. 
+#Which one of the descriptions on this card describes your relationship 
+#to them?
+#--------------------------------------------------------------------
+
+rshpsts_mapping = {
+    1: 'married',
+    2: 'married',
+    3: 'Partner',
+    4: 'Partner',
+    5: 'Divorced',
+    6: 'Divorced',
+    66: 'Single', 
+    77: None, 
+    88: None,
+    99: None   
+}
+
+df['rshpsts'] = df['rshpsts'].map(rshpsts_mapping)
+df['rshpsts'] = df['rshpsts'].astype('category')
+
+print(df['rshpsts'].unique())
+print(df['rshpsts'].dtype)
+
+#--------------------------------------------------------------------
+#9- chldhm/Childrent at Home
+#--------------------------------------------------------------------
+
+chldhm_mapping = {
+    1: 'Respondent lives with children at household grid',
+    2: 'Does not',
+    9: None 
+}
+
+df['chldhm'] = df['chldhm'].map(chldhm_mapping)
+df['chldhm'] = df['chldhm'].astype('category')
+
+print(df['chldhm'].unique())
+print(df['chldhm'].dtype)
+
+#--------------------------------------------------------------------
+#10_health/ Subjective general health
+
+#How is your health in general? Would you say it is ...
+
+#--------------------------------------------------------------------
+
+health_mapping={
+    1:	"Very good",
+    2:	"Good",
+    3:	"Fair",
+    4:	"Bad",
+    5:	"Very bad",
+    7:	None,
+    8:	None,
+    9:	None
+}
+
+df['health']=df['health'].map(health_mapping)
+df['health']=df['health'].astype("category")
+
+print(df['health'].unique())
+print(df['health'].dtype)
+
+#--------------------------------------------------------------------
+#11_ ctzcntr/Citizen of a country
+#--------------------------------------------------------------------
+
+ctzcntr_mapping = {
+    1: 'Yes',
+    2: 'No',
+    7: None,
+    8: None,
+    9: None
+}
+
+df['ctzcntr'] = df['ctzcntr'].map(ctzcntr_mapping)
+df['ctzcntr'] = df['ctzcntr'].astype('category')
+
+print(df['ctzcntr'].unique())
+print(df['ctzcntr'].dtype)
+
+#--------------------------------------------------------------------
+#12_ domicil - Domicile, respondent's description
+#Which phrase on this card best describes the area where you live?
+#--------------------------------------------------------------------
+
+domicil_mapping = {
+    1: "A big city",
+    2: "Suburbs or outskirts of big city",
+    3: "Town or small city",
+    4: "Country village",
+    5: "Farm or home in countryside",
+    7: None,
+    8: None,
+    9: None
+}
+
+df['domicil'] = df['domicil'].map(domicil_mapping)
+df['domicil'] = df['domicil'].astype('category')
+
+
+print(df['domicil'].unique())
+print(df['domicil'].dtype)
+
+#--------------------------------------------------------------------
+#13- estsz - Establishment size
+
+#Including yourself, about how many people are/were employed at the 
+#place where you usually work/worked?
+
+#--------------------------------------------------------------------
+estsz_mapping = {
+    1: "Under 10",
+    2: "10 to 24",
+    3: "25 to 99",
+    4: "100 to 499",
+    5: "500 or more",
+    6: None,  
+    7: None,  
+    8: None,  
+    9: None   
+}
+
+
+df['estsz'] = df['estsz'].map(estsz_mapping)
+df['estsz'] = df['estsz'].astype('category')
+
+print(df['estsz'].unique())
+print(df['estsz'].dtype)
+
+#--------------------------------------------------------------------
+#14_ jbspv - Responsible for supervising other employees
+
+#In your main job, do/did you have any responsibility for supervising 
+#the work of other employees?
+
+#--------------------------------------------------------------------
+
+jbspv_mapping = {
+    1: "Yes",
+    2: "No",
+    6: None,  
+    7: None,  
+    8: None,  
+    9: None  
+}
+
+df['jbspv'] = df['jbspv'].map(jbspv_mapping)
+df['jbspv'] = df['jbspv'].astype('category')
+
+print(df['jbspv'].unique())
+print(df['jbspv'].dtype)
+
+#--------------------------------------------------------------------
+#pdwrkp - Partner doing last 7 days: paid work
+
+#Which of the descriptions on this card applies to what he/she has 
+#been doing for the last 7 days? In paid work (or away temporarily) 
+#(employee, self-employed, working for your family business)
+
+#--------------------------------------------------------------------
+
+pdwrkp_mapping={
+    0: 	"Not marked",
+    1:	"Marked"
+}
+
+df['pdwrkp']=df['pdwrkp'].map(pdwrkp_mapping)
+df['pdwrkp']=df['pdwrkp'].astype("category")
+
+print(df['pdwrkp'].unique())
+print(df['pdwrkp'].dtype)
+
+#--------------------------------------------------------------------
+#15- hswrkp - Partner doing last 7 days: housework, looking after 
+#children, others
+
+#Which of the descriptions on this card applies to what he/she has 
+#been doing for the last 7 days? Doing housework, looking after 
+#children or other persons
+
+#--------------------------------------------------------------------
+
+hswrkp_mapping={
+    0: 	"No",
+    1:	"Yes"
+}
+
+df['hswrkp']=df['hswrkp'].map(hswrkp_mapping)
+df['hswrkp']=df['hswrkp'].astype("category")
+
+print(df['hswrkp'].unique())
+print(df['hswrkp'].dtype)
+
+#--------------------------------------------------------------------
+#16- fltanx - Felt anxious, how often past week
+
+#And please tell me how much of the time during the past week... ...
+#you felt anxious?
+#--------------------------------------------------------------------
+
+fltanx_mapping = {
+    1: "None or almost none of the time",
+    2: "Some of the time",
+    3: "Most of the time",
+    4: "All or almost all of the time",
+    7: None,  
+    8: None,  
+    9: None   
+}
+
+df['fltanx'] = df['fltanx'].map(fltanx_mapping)
+df['fltanx'] = df['fltanx'].astype('category')
+
+print(df['fltanx'].unique())
+print(df['fltanx'].dtype)
+
+#--------------------------------------------------------------------
+#17- slprl - Sleep was restless, how often past week
+
+#I will now read out a list of the ways you might have felt or 
+#behaved during the past week. Using this card, please tell me how 
+#much of the time during the past week... ...your sleep was restless?
+#--------------------------------------------------------------------
+
+slprl_mapping = {
+    1: "None or almost none of the time",
+    2: "Some of the time",
+    3: "Most of the time",
+    4: "All or almost all of the time",
+    7: np.nan,  
+    8: np.nan,  
+    9: np.nan   
+}
+
+df['slprl'] = df['slprl'].map(slprl_mapping)
+df['slprl'] = df['slprl'].astype('category')
+
+print(df['slprl'].unique())
+print(df['slprl'].dtype)
+
+#--------------------------------------------------------------------
+#18- cntry - Country
+#--------------------------------------------------------------------
+country_mapping = {
+    'AL': 'Albania',
+    'AT': 'Austria',
+    'BE': 'Belgium',
+    'BG': 'Bulgaria',
+    'CH': 'Switzerland',
+    'CY': 'Cyprus',
+    'CZ': 'Czechia',
+    'DE': 'Germany',
+    'DK': 'Denmark',
+    'EE': 'Estonia',
+    'ES': 'Spain',
+    'FI': 'Finland',
+    'FR': 'France',
+    'GB': 'United Kingdom',
+    'GE': 'Georgia',
+    'GR': 'Greece',
+    'HR': 'Croatia',
+    'HU': 'Hungary',
+    'IE': 'Ireland',
+    'IS': 'Iceland',
+    'IL': 'Israel',
+    'IT': 'Italy',
+    'LT': 'Lithuania',
+    'LU': 'Luxembourg',
+    'LV': 'Latvia',
+    'ME': 'Montenegro',
+    'MK': 'North Macedonia',
+    'NL': 'Netherlands',
+    'NO': 'Norway',
+    'PL': 'Poland',
+    'PT': 'Portugal',
+    'RO': 'Romania',
+    'RS': 'Serbia',
+    'RU': 'Russian Federation',
+    'SE': 'Sweden',
+    'SI': 'Slovenia',
+    'SK': 'Slovakia',
+    'TR': 'Turkey',
+    'UA': 'Ukraine',
+    'XK': 'Kosovo'
+}
+
+df['cntry'] = df['cntry'].map(country_mapping)
+df['cntry'] = df['cntry'].astype('category')
+
+print(df['cntry'].unique())
+print(df['cntry'].dtype)
+
+##================================== Missing values in Numeric Columns
+#--------------------------------------------------------------------
+#1- happy/How happy are you:
+
+#Taking all things together, how happy would you say you are?
+#--------------------------------------------------------------------
+
+missing_value_happy = [77, 88, 99]
+df['happy'] = df['happy'].replace(missing_value_happy, np.nan)
+
+#--------------------------------------------------------------------
+
+#2- rehlppl - Receive help and support from people you are close to:
+#To what extent do you receive help and support from people you are 
+#close to when you need it? Please use this card where 0 is not at 
+#all and 6 is completely.
+#--------------------------------------------------------------------
+
+missing_value_rehlppl = [7, 8, 9]
+df['rehlppl'] = df['rehlppl'].replace(missing_value_rehlppl, np.nan)
+
+#--------------------------------------------------------------------
+#3- hhmmb - Number of people living regularly as member of household
+
+#Including yourself, how many people - including children - live here 
+#regularly as members of this household?
+
+#--------------------------------------------------------------------
+
+missing_value_hhmmb = [77, 88, 99]
+df['hhmmb'] = df['hhmmb'].replace(missing_value_hhmmb, np.nan)
+
+#--------------------------------------------------------------------
+#4- wkdcorga - Allowed to decide how daily work is organised
+#I am going to read out a list of things about your working life. 
+#Using this card, please say how much the management at your work 
+#allows/allowed you... ...to decide how your own daily work is/was 
+#organised?
+#--------------------------------------------------------------------
+
+missing_value_wkdcorga = [66,77, 88, 99]
+df['wkdcorga'] = df['wkdcorga'].replace(missing_value_wkdcorga, np.nan)
+
+#--------------------------------------------------------------------
+#5- iorgact - Allowed to influence policy decisions about activities 
+#of organisation
+
+#I am going to read out a list of things about your working life. Using
+#this card, please say how much the management at your work 
+#allows/allowed you... ...to influence policy decisions about the 
+#activities of the organisation?
+#--------------------------------------------------------------------
+
+missing_value_iorgact = [66,77, 88, 99]
+df['iorgact'] = df['iorgact'].replace(missing_value_iorgact, np.nan)
+
+#--------------------------------------------------------------------
+#7- stfjb - How satisfied with job
+#All things considered, how satisfied are you with your present job?
+#--------------------------------------------------------------------
+
+missing_value_stfjb = [66,77, 88, 99]
+df['stfjb'] = df['stfjb'].replace(missing_value_stfjb, np.nan)
+df.dropna(subset=['stfjb'], inplace=True)
+
+#--------------------------------------------------------------------
+#8- wkhct - Total contracted hours per week in main job overtime excluded
+#What are/were your total 'basic' or contracted hours each week 
+#(in your main job), excluding any paid and unpaid overtime?
+#--------------------------------------------------------------------
+
+missing_value_wkhct = [666,777, 888, 999]
+df['wkhct'] = df['wkhct'].replace(missing_value_wkhct, np.nan)
+
+#--------------------------------------------------------------------
+#9- wkhtot - Total hours normally worked per week in main job overtime included
+#Regardless of your basic or contracted hours, how many hours do/did 
+#you normally work a week (in your main job), including any paid or 
+#unpaid overtime
+#--------------------------------------------------------------------
+
+missing_value_wkhtot = [666,777, 888, 999]
+df['wkhtot'] = df['wkhtot'].replace(missing_value_wkhtot, np.nan)
+df.dropna(subset=['wkhtot'], inplace=True)
+
+#--------------------------------------------------------------------
+#10- agea - Age of respondent, calculated
+#--------------------------------------------------------------------
+
+missing_value_agea = [999]
+df['agea'] = df['agea'].replace(missing_value_agea, np.nan)
+
+#--------------------------------------------------------------------
+#11- stflife - How satisfied with life as a whole
+#All things considered, how satisfied are you with your life as a 
+#whole nowadays? Please answer using this card, where 0 means 
+#extremely dissatisfied and 10 means extremely satisfied.
+#--------------------------------------------------------------------
+
+missing_value_stflife = [77,88,99]
+df['stflife'] = df['stflife'].replace(missing_value_stflife, np.nan)
+
+#--------------------------------------------------------------------
+#12-stfjbot - Satisfied with balance between time on job and time on 
+#other aspects
+#How satisfied are you with the balance between the time you spend on 
+#your paid work and the time you spend on other aspects of your life?
+#--------------------------------------------------------------------
+
+missing_value_stfjbot = [66,77,88,99]
+df['stfjbot'] = df['stfjbot'].replace(missing_value_stfjbot, np.nan)
+df.dropna(subset=['stfjbot'], inplace=True)
+
+#--------------------------------------------------------------------
+#13-tmdotwa - Make time to do things you really want to do
+#To what extent do you make time to do the things you really want to 
+#do? Please use this card where 0 is not at all and 10 is completely.
+#--------------------------------------------------------------------
+
+missing_value_tmdotwa = [77,88,99]
+df['tmdotwa'] = df['tmdotwa'].replace(missing_value_tmdotwa, np.nan)
+df.dropna(subset=['tmdotwa'], inplace=True)
+
+#--------------------------------------------------------------------
+#14-deaimpp- Deal with important problems in life
+#How difficult or easy do you find it to deal with important problems
+#that come up in your life? Please use this card where 0 is extremely 
+#difficult and 10 is extremely easy.
+#--------------------------------------------------------------------
+
+missing_value_deaimpp = [77,88,99]
+df['deaimpp'] = df['deaimpp'].replace(missing_value_deaimpp, np.nan)
+
+## ==============================================Making New variable
+#Defining a generalized education level from column "edulvlb" 
+#that can facilitate comparisons across different countries under 
+#the name of "general_edu_level":
+#--------------------------------------------------------------------
+
+general_edu_mapping = {
+    0: "Not completed ISCED level 1",
+    113: "Primary Education",
+    129: "Lower Secondary Education",
+    212: "Lower Secondary Education",
+    213: "Lower Secondary Education",
+    221: "Lower Secondary Education",
+    222: "Lower Secondary Education",
+    223: "Lower Secondary Education",
+    229: "Upper Secondary Education",
+    311: "Upper Secondary Education",
+    312: "Upper Secondary Education",
+    313: "Upper Secondary Education",
+    321: "Upper Secondary Education",
+    322: "Upper Secondary Education",
+    323: "Upper Secondary Education",
+    412: "Post-secondary Non-tertiary Education",
+    413: "Post-secondary Non-tertiary Education",
+    421: "Post-secondary Non-tertiary Education",
+    422: "Post-secondary Non-tertiary Education",
+    423: "Post-secondary Non-tertiary Education",
+    510: "Short-cycle Tertiary Education",
+    520: "Short-cycle Tertiary Education",
+    610: "Bachelor’s or Equivalent Level",
+    620: "Bachelor’s or Equivalent Level",
+    710: "Master’s or Equivalent Level",
+    720: "Master’s or Equivalent Level",
+    800: "Doctoral or Equivalent Level",
+    5555: "Other",
+    7777: np.nan,  
+    8888: np.nan,  
+    9999: np.nan   
+}
+
+df['general_edu_level'] = df['edulvlb'].map(general_edu_mapping)
+df['general_edu_level'] = df['general_edu_level'].astype('category')
+
+print(df['general_edu_level'].unique())
+print(df['general_edu_level'].dtype)
+
+#--------------------------------------------------------------------
+# For Finding marital status
+#--------------------------------------------------------------------
+
+participants_with_hhmmb_1 = df[df['hhmmb'] == 1]
+
+participants_rshpsts_answers = participants_with_hhmmb_1['rshpsts']
+
+print(participants_rshpsts_answers)
+
+## =============Target Value-Binary(For Visualization): WLB Satisfaction
+#Convert Satisfaction with WLB to binary
+def transform_value(x):
+    if 0 <= x <= 5:
+        return 'Not Satisfied'  # Not satisfied
+    elif 6 <= x <= 10:
+        return 'Satisfied'      # Satisfied
+
+df['stfjbot'] = df['stfjbot'].apply(transform_value)
+df['stfjbot'] = pd.Categorical(df['stfjbot'], categories=['Not Satisfied', 'Satisfied'])
+print(df['stfjbot'].value_counts())
+
+##=========================================== Finding Missing Values
+##================Total NaN in the Entire DataFrame
+
+total_nan = df.isnull().sum().sum()
+total_elements = df.size
+percentage_nan = (total_nan / total_elements) * 100
+print(f"Total NaN in the DataFrame: {total_nan}")
+print(f"Percentage of NaN: {percentage_nan:.2f}%")
+
+##================================================NaN in Each Column
+nan_per_column = df.isnull().sum()
+
+nan_sorted = nan_per_column.sort_values(ascending=False)
+
+print(" NaN values per column, sorted in descending order:")
+print(nan_sorted)
+
+##=========================================Percentage of NaN Values
+
+nan_percentage = (df.isnull().sum() / len(df)) * 100
+
+nan_percentage_sorted = nan_percentage.sort_values(ascending=False)
+
+print("Percentage of NaN values per column, sorted in descending order:")
+print(nan_percentage_sorted)
+
+##=========================================Visualizing Missing Data
+import seaborn as sns
+import matplotlib.pyplot as plt
+import missingno as msno
+plt.figure(figsize=(10, 6))
+sns.heatmap(df.isnull(), cbar=False, yticklabels=False, cmap='viridis')
+plt.title('NaN Heatmap')
+plt.show()
+msno.matrix(df)  
+
+#=========================Ranking the features based on missing values
+missing_percent = df.isnull().sum() / len(df) * 100
+missing_percent.sort_values(ascending=False, inplace=True)
+print(missing_percent)
+
+##=============================================File of Missing Values
+
+missing_percent_sorted = missing_percent.sort_values(ascending=False)
+
+##========================Convert to DataFrame for easy CSV export
+missing_values_ranked_df = missing_percent_sorted.reset_index()
+missing_values_ranked_df.columns = ['Column', 'PercentageMissing']
+
+missing_values_ranked_df.to_csv('missing_values_ranked.csv', index=False)
+
+##========================================= Missing Value Imputation
+#For numerical features the "Median" is applied and for categorical 
+#features "Mode" is applied.
+
+def impute_missing_values(df):
+    for column in df.columns:
+        
+        if df[column].isnull().any():
+            
+            if df[column].dtype == 'object' or pd.api.types.is_categorical_dtype(df[column]):
+                
+                mode_value = df[column].mode()[0]
+                df[column].fillna(value=mode_value, inplace=True)
+                print(f"Mode imputation applied on {column}. Mode used: {mode_value}")
+            elif df[column].dtype == 'float64' or df[column].dtype == 'int64':
+                
+                median_value = df[column].median()
+                df[column].fillna(value=median_value, inplace=True)
+                print(f"Median imputation applied on {column}. Median used: {median_value}")
+
+
+impute_missing_values(df)
+print(df.head())
+
+df.info()
+## ================================================Data Visualization
+df.rename(columns={'wkhtot':'Overtime Working Hours',
+          'nacer2':'Career',
+          'tporgwk':'Type of Organization',
+          'hincsrca':'Source of Income',
+          'hinctnta':'Total Net Income',
+          'hincfel':'Feeling About Income',
+          'emplrel':'Employment Status',
+          'gndr':'Gender',
+          'agea':'Age',
+          'rshpsts':'Marital Status',
+          'chldhm':'Children Living at Home',
+          'health':'Health',
+          'cntry':'Country',
+          'stflife':'Life Satisfaction',
+          'happy':'Happiness',
+          'ctzcntr':'Citizenship Status',
+          'rehlppl':'External support',
+          'hhmmb':'Family size',
+          'domicil': 'Area of Living',
+          'estsz':'Company Size',
+          'jbspv':' Supervision Responsibility.',
+          'wkdcorga':'Job control',
+          'iorgact':'Engagement in Organizational Decisions',
+          'pdwrkp':'partner employment status',
+          'hswrkp':'Partner help at home',
+          'stfjb':'Job Satisfactio',
+          'fltanx':'Anxiety Status',
+          'slprl':'Sleep Problem',
+          'wkhct':'Total Contract working Hours',
+          'tmdotwa':'Personal Time Status',
+          'deaimpp':'Important Problems in Life',
+          'general_edu_level':'Education'},inplace=True)
+##====================================================Target Variable
+import matplotlib.pyplot as plt
+
+category_proportions = df['stfjbot'].value_counts(normalize=True)
+
+ax = category_proportions.plot(kind='bar', color=['#1b9e77','#6890F0'], figsize=(8, 6))
+
+for i in ax.patches:
+    ax.text(i.get_x() + i.get_width()/2, i.get_height() + 0.01, \
+            str(round((i.get_height() * 100), 2)) + '%', ha='center', color='black')
+
+plt.title('Proportion of Work-life Balance Satisfaction')
+plt.ylabel('Percentage')
+plt.xticks(range(len(category_proportions.index)), category_proportions.index, rotation=0)
+plt.tight_layout()
+plt.show()
+
+##==========================================Stackbar for categorical
+import pandas as pd
+import matplotlib.pyplot as plt
+
+categorical_features = df.select_dtypes(include=['object', 'category']).columns.tolist()
+categorical_features.remove('stfjbot')
+
+for feature in categorical_features:
+
+    crosstab = pd.crosstab(df[feature], df['stfjbot'], normalize='index')
+    
+    crosstab = crosstab.sort_values(by='Satisfied')
+    
+    crosstab.plot(kind='bar', stacked=True, color=['#6890F0', '#1b9e77'], figsize=(8, 6))
+    plt.title(f'Stacked Bar Chart of {feature}')
+    plt.xticks(rotation=90)
+    plt.tick_params(axis='x', which='major', labelsize=8)
+    plt.legend(title='Satisfaction')
+    plt.show()
+
+##============================================Histogram for Numerical 
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df['stfjbot'] = df['stfjbot'].replace({0: 'Not Satisfied', 1: 'Satisfied'})
+
+# Numerical columns
+numerical_columns = ['Overtime Working Hours', 'Age', 'Life Satisfaction', 
+                     'Happiness', 'External support', 'Family size', 
+                     'Job control', 'Engagement in Organizational Decisions', 
+                     'Job Satisfactio', 'Total Contract working Hours', 
+                     'Personal Time Status', 'Important Problems in Life']
+
+for column in numerical_columns:
+    plt.figure(figsize=(8, 6))
+    
+    if 'Not Satisfied' in df['stfjbot'].unique() and 'Satisfied' in df['stfjbot'].unique():
+        plt.hist(df[column][df['stfjbot'] == 'Not Satisfied'], bins=25, alpha=0.5, color='b', label='Not Satisfied',density=True)
+        plt.hist(df[column][df['stfjbot'] == 'Satisfied'], bins=25, alpha=0.5, color='r', label='Satisfied',density=True)
+        
+        plt.title(f'Histogram of {column} by stfjbot')
+        plt.xlabel(column)
+        plt.ylabel('Frequency')
+        plt.legend()
+        plt.show()
+    else:
+        print(f"No data available for both categories of 'stfjbot' in column: {column}")
+
+##==============================================================Outlier
+
+outlier_columns = ['Overtime Working Hours', 'Age', 'Total Contract working Hours','Family size']
+
+def remove_outliers_iqr(df, column):
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+
+
+for column in outlier_columns:
+    df = remove_outliers_iqr(df, column)
+#=========================================================== Assurance for 
+
+def transform_value(x):
+    if 0 <= x <= 5:
+        return 0  # Not satisfied
+    elif 6 <= x <= 10:
+        return 1      # Satisfied
+
+df['stfjbot'] = df['stfjbot'].apply(transform_value)
+print(df['stfjbot'].value_counts())
+#==================================================================
+# Hyperparameter Tuning through NCV for Logistic Regression
+#Plotting the each Fold Result
+#==================================================================
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import uniform
+from sklearn.metrics import classification_report, confusion_matrix, f1_score, auc, precision_recall_curve
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from imblearn.over_sampling import RandomOverSampler
+import pandas as pd
+
+label_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+scaler = MinMaxScaler()
+
+# Apply MinMaxScaler on training data
+df[df.select_dtypes(include=['int64', 'float']).columns] = scaler.fit_transform(df[df.select_dtypes(include=['int64', 'float']).columns])
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+param_grid_logistic_regression = {
+    'C': uniform(0.01, 100),
+    'penalty': ['l2', 'l1'],
+    'solver': ['liblinear', 'saga']
+}
+
+outer_num_splits = 5  
+inner_num_splits = 3  
+
+# outer cross-validation 
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+
+outer_results_aucpr = []
+best_params_list = []
+f1_scores_per_fold = []
+aucpr_per_fold = []
+classification_reports = []
+
+for fold, (train_index, test_index) in enumerate(outer_cv.split(X, y), 1):
+    X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+    y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+    #MinMaxScaler on training data
+    X_train_outer_scaled = scaler.fit_transform(X_train_outer)
+    X_test_outer_scaled = scaler.transform(X_test_outer)
+
+    # random oversampling to the training set
+    oversampler = RandomOverSampler(random_state=42)
+    X_train_outer_resampled, y_train_outer_resampled = oversampler.fit_resample(X_train_outer_scaled, y_train_outer)
+
+    # inner cross-validation
+    inner_cv = StratifiedKFold(n_splits=inner_num_splits, shuffle=True, random_state=42)
+    lr_classifier = LogisticRegression(random_state=42)
+    random_search = RandomizedSearchCV(estimator=lr_classifier, param_distributions=param_grid_logistic_regression, n_iter=50, cv=inner_cv, scoring='f1')
+    random_search.fit(X_train_outer_resampled, y_train_outer_resampled)
+    best_model = random_search.best_estimator_
+
+    best_params_list.append(random_search.best_params_)
+
+    print(f"Best Parameters for Fold {fold}:", random_search.best_params_)
+
+    # outer test fold
+    outer_predictions = best_model.predict(X_test_outer_scaled)
+    outer_true_labels = y_test_outer
+
+    # Check AUC-PR for the outer fold
+    precision, recall, _ = precision_recall_curve(outer_true_labels, outer_predictions)
+    outer_aucpr = auc(recall, precision)
+    outer_results_aucpr.append(outer_aucpr)
+    aucpr_per_fold.append(outer_aucpr)
+
+    fold_classification_report = classification_report(outer_true_labels, outer_predictions)
+    classification_reports.append(f"Classification Report for Fold {fold}:\n{fold_classification_report}\n{'-'*50}")
+
+outer_results_aucpr = np.array(outer_results_aucpr)
+
+mean_outer_aucpr = np.mean(outer_results_aucpr)
+
+print("Mean AUC-PR:", mean_outer_aucpr)
+print("-" * 50)
+
+print("Best Parameters for Each Fold:")
+for i, params in enumerate(best_params_list, 1):
+    print(f"Fold {i}: {params}")
+
+print("AUC-PR for Each Fold:", aucpr_per_fold)
+
+for report in classification_reports:
+    print(report)
+
+plt.figure(figsize=(14, 6))
+
+plt.figure(figsize=(14, 6))
+plt.subplot(1, 2, 1)
+sns.heatmap(outer_results_aucpr.reshape(-1, 1), cmap="YlGnBu", annot=True, cbar=False, annot_kws={"size": 12, "ha": 'center'}, fmt=".4f")
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.subplot(1, 2, 2)
+plt.plot(range(1, len(aucpr_per_fold) + 1), aucpr_per_fold, marker='o')
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.tight_layout()
+plt.show()
+
+
+#==================================================================
+# Hyperparameter Tuning through NCV for SVM
+#Plotting the each Fold Result
+#==================================================================
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
+from sklearn.svm import SVC
+from scipy.stats import uniform
+from sklearn.metrics import classification_report, auc, precision_recall_curve
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from imblearn.over_sampling import RandomOverSampler
+import pandas as pd
+
+label_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+scaler = MinMaxScaler()
+
+#  MinMaxScaler on training data
+df[df.select_dtypes(include=['int64', 'float']).columns] = scaler.fit_transform(df[df.select_dtypes(include=['int64', 'float']).columns])
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+param_grid_svm = {
+    'C': uniform(0.1, 10),
+    'kernel': ['linear', 'rbf', 'poly'],
+    'gamma': ['scale', 'auto']
+}
+
+outer_num_splits = 5
+inner_num_splits = 3
+
+# outer cross-validation 
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+
+outer_results_aucpr = []
+best_params_list = []
+aucpr_per_fold = []
+classification_reports = []
+
+for fold, (train_index, test_index) in enumerate(outer_cv.split(X, y), 1):
+    X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+    y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+    #  MinMaxScaler on training data
+    X_train_outer_scaled = scaler.fit_transform(X_train_outer)
+    X_test_outer_scaled = scaler.transform(X_test_outer)
+
+    # random oversampling to the training set
+    oversampler = RandomOverSampler(random_state=42)
+    X_train_outer_resampled, y_train_outer_resampled = oversampler.fit_resample(X_train_outer_scaled, y_train_outer)
+
+    # inner cross-validation
+    inner_cv = StratifiedKFold(n_splits=inner_num_splits, shuffle=True, random_state=42)
+    svm_classifier = SVC(random_state=42)
+    random_search = RandomizedSearchCV(estimator=svm_classifier, param_distributions=param_grid_svm, n_iter=50, cv=inner_cv, scoring='f1')
+    random_search.fit(X_train_outer_resampled, y_train_outer_resampled)
+    best_model = random_search.best_estimator_
+
+    best_params_list.append(random_search.best_params_)
+
+    print(f"Best Parameters for Fold {fold}:", random_search.best_params_)
+
+    # outer test fold
+    outer_predictions = best_model.predict(X_test_outer_scaled)
+    outer_true_labels = y_test_outer
+
+    # Check AUC-PR for the outer fold
+    precision, recall, _ = precision_recall_curve(outer_true_labels, outer_predictions)
+    outer_aucpr = auc(recall, precision)
+    outer_results_aucpr.append(outer_aucpr)
+    aucpr_per_fold.append(outer_aucpr)
+
+    fold_classification_report = classification_report(outer_true_labels, outer_predictions)
+    classification_reports.append(f"Classification Report for Fold {fold}:\n{fold_classification_report}\n{'-'*50}")
+
+outer_results_aucpr = np.array(outer_results_aucpr)
+
+mean_outer_aucpr = np.mean(outer_results_aucpr)
+
+print("Mean AUC-PR:", mean_outer_aucpr)
+print("-" * 50)
+
+print("Best Parameters for Each Fold:")
+for i, params in enumerate(best_params_list, 1):
+    print(f"Fold {i}: {params}")
+
+print("AUC-PR for Each Fold:", aucpr_per_fold)
+
+for report in classification_reports:
+    print(report)
+
+plt.figure(figsize=(14, 6))
+
+plt.figure(figsize=(14, 6))
+plt.subplot(1, 2, 1)
+sns.heatmap(outer_results_aucpr.reshape(-1, 1), cmap="YlGnBu", annot=True, cbar=False, annot_kws={"size": 12, "ha": 'center'}, fmt=".4f")
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.subplot(1, 2, 2)
+plt.plot(range(1, len(aucpr_per_fold) + 1), aucpr_per_fold, marker='o')
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.tight_layout()
+plt.show()
+
+
+#==================================================================
+# Hyperparameter Tuning through NCV for LightGBM
+#Plotting the each Fold Result
+#==================================================================
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
+from scipy.stats import randint, uniform
+from sklearn.metrics import classification_report, auc, precision_recall_curve
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from imblearn.over_sampling import RandomOverSampler
+import pandas as pd
+import lightgbm as lgb
+
+
+label_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+scaler = MinMaxScaler()
+
+# Apply MinMaxScaler on training data
+df[df.select_dtypes(include=['int64', 'float']).columns] = scaler.fit_transform(df[df.select_dtypes(include=['int64', 'float']).columns])
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+param_grid_lightgbm = {
+    'n_estimators': randint(50, 500),
+    'learning_rate': uniform(0.01, 0.1),
+    'max_depth': [10, 20, 30, 40, 50, -1],
+    'num_leaves': randint(20, 128)
+}
+
+outer_num_splits = 5
+inner_num_splits = 3
+
+# outer cross-validation 
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+outer_results_aucpr = []
+best_params_list = []
+aucpr_per_fold = []
+classification_reports = []
+
+for fold, (train_index, test_index) in enumerate(outer_cv.split(X, y), 1):
+    X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+    y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+    #  MinMaxScaler on training data
+    X_train_outer_scaled = scaler.fit_transform(X_train_outer)
+    X_test_outer_scaled = scaler.transform(X_test_outer)
+
+    # Random oversampling to the training set
+    oversampler = RandomOverSampler(random_state=42)
+    X_train_outer_resampled, y_train_outer_resampled = oversampler.fit_resample(X_train_outer_scaled, y_train_outer)
+
+    # Inner cross-validation
+    inner_cv = StratifiedKFold(n_splits=inner_num_splits, shuffle=True, random_state=42)
+    lgb_classifier = lgb.LGBMClassifier(random_state=42)
+    random_search = RandomizedSearchCV(estimator=lgb_classifier, param_distributions=param_grid_lightgbm, n_iter=50, cv=inner_cv, scoring='f1')
+    random_search.fit(X_train_outer_resampled, y_train_outer_resampled)
+    best_model = random_search.best_estimator_
+
+    best_params_list.append(random_search.best_params_)
+
+    print(f"Best Parameters for Fold {fold}:", random_search.best_params_)
+
+    # Outer test fold
+    outer_predictions = best_model.predict(X_test_outer_scaled)
+    outer_true_labels = y_test_outer
+
+    # Check AUC-PR for the outer fold
+    precision, recall, _ = precision_recall_curve(outer_true_labels, outer_predictions)
+    outer_aucpr = auc(recall, precision)
+    outer_results_aucpr.append(outer_aucpr)
+    aucpr_per_fold.append(outer_aucpr)
+
+    fold_classification_report = classification_report(outer_true_labels, outer_predictions)
+    classification_reports.append(f"Classification Report for Fold {fold}:\n{fold_classification_report}\n{'-'*50}")
+
+outer_results_aucpr = np.array(outer_results_aucpr)
+
+mean_outer_aucpr = np.mean(outer_results_aucpr)
+
+print("Mean AUC-PR:", mean_outer_aucpr)
+print("-" * 50)
+
+print("Best Parameters for Each Fold:")
+for i, params in enumerate(best_params_list, 1):
+    print(f"Fold {i}: {params}")
+
+print("AUC-PR for Each Fold:", aucpr_per_fold)
+
+for report in classification_reports:
+    print(report)
+
+plt.figure(figsize=(14, 6))
+
+plt.figure(figsize=(14, 6))
+plt.subplot(1, 2, 1)
+sns.heatmap(outer_results_aucpr.reshape(-1, 1), cmap="YlGnBu", annot=True, cbar=False, annot_kws={"size": 12, "ha": 'center'}, fmt=".4f")
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.subplot(1, 2, 2)
+plt.plot(range(1, len(aucpr_per_fold) + 1), aucpr_per_fold, marker='o')
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.tight_layout()
+plt.show()
+
+
+
+#==================================================================
+# Hyperparameter Tuning through NCV for Random Forest
+#Plotting the each Fold Result
+#==================================================================
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from scipy.stats import randint
+from sklearn.metrics import classification_report, auc, precision_recall_curve
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from imblearn.over_sampling import RandomOverSampler
+import pandas as pd
+
+label_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+scaler = MinMaxScaler()
+
+# MinMaxScaler on training data
+df[df.select_dtypes(include=['int64', 'float']).columns] = scaler.fit_transform(df[df.select_dtypes(include=['int64', 'float']).columns])
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+param_grid_rf = {
+    'n_estimators': randint(50, 500),
+    'max_depth': [10, 20, 30, 40, 50, None],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'bootstrap': [True, False]
+}
+
+outer_num_splits = 5
+inner_num_splits = 3
+
+# outer cross-validation
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+outer_results_aucpr = []
+best_params_list = []
+aucpr_per_fold = []
+classification_reports = []
+
+for fold, (train_index, test_index) in enumerate(outer_cv.split(X, y), 1):
+    X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+    y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+    # MinMaxScaler on training data
+    X_train_outer_scaled = scaler.fit_transform(X_train_outer)
+    X_test_outer_scaled = scaler.transform(X_test_outer)
+
+    # Random oversampling to the training set
+    oversampler = RandomOverSampler(random_state=42)
+    X_train_outer_resampled, y_train_outer_resampled = oversampler.fit_resample(X_train_outer_scaled, y_train_outer)
+
+    # Inner cross-validation
+    inner_cv = StratifiedKFold(n_splits=inner_num_splits, shuffle=True, random_state=42)
+    rf_classifier = RandomForestClassifier(random_state=42)
+    random_search = RandomizedSearchCV(estimator=rf_classifier, param_distributions=param_grid_rf, n_iter=50, cv=inner_cv, scoring='f1')
+    random_search.fit(X_train_outer_resampled, y_train_outer_resampled)
+    best_model = random_search.best_estimator_
+
+    best_params_list.append(random_search.best_params_)
+
+    print(f"Best Parameters for Fold {fold}:", random_search.best_params_)
+
+    # Outer test fold
+    outer_predictions = best_model.predict(X_test_outer_scaled)
+    outer_true_labels = y_test_outer
+
+    # Check AUC-PR for the outer fold
+    precision, recall, _ = precision_recall_curve(outer_true_labels, outer_predictions)
+    outer_aucpr = auc(recall, precision)
+    outer_results_aucpr.append(outer_aucpr)
+    aucpr_per_fold.append(outer_aucpr)
+
+    fold_classification_report = classification_report(outer_true_labels, outer_predictions)
+    classification_reports.append(f"Classification Report for Fold {fold}:\n{fold_classification_report}\n{'-'*50}")
+
+outer_results_aucpr = np.array(outer_results_aucpr)
+
+mean_outer_aucpr = np.mean(outer_results_aucpr)
+
+print("Mean AUC-PR:", mean_outer_aucpr)
+print("-" * 50)
+
+print("Best Parameters for Each Fold:")
+for i, params in enumerate(best_params_list, 1):
+    print(f"Fold {i}: {params}")
+
+print("AUC-PR for Each Fold:", aucpr_per_fold)
+
+for report in classification_reports:
+    print(report)
+
+plt.figure(figsize=(14, 6))
+
+plt.figure(figsize=(14, 6))
+plt.subplot(1, 2, 1)
+sns.heatmap(outer_results_aucpr.reshape(-1, 1), cmap="YlGnBu", annot=True, cbar=False, annot_kws={"size": 12, "ha": 'center'}, fmt=".4f")
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.subplot(1, 2, 2)
+plt.plot(range(1, len(aucpr_per_fold) + 1), aucpr_per_fold, marker='o')
+plt.title('AUC-PR across Outer Folds')
+plt.xlabel('Folds')
+plt.ylabel('AUC-PR')
+
+plt.tight_layout()
+plt.show()
+
+#==================================================================
+#Best Parameter- All models
+#==================================================================
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
+from sklearn.metrics import classification_report, precision_recall_curve, auc, confusion_matrix
+import numpy as np
+import matplotlib.pyplot as plt
+
+label_columns = df.select_dtypes(include=['category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+outer_num_splits = 5  
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+
+models = ['RandomForest', 'SVM', 'LogisticRegression', 'LightGBM']
+results = {model: {'accuracy': [], 'precision': [], 'recall': [], 'f1': [], 'pr_auc': [], 'predictions': [], 'true_labels': []} for model in models}
+
+
+best_params = {
+    'RandomForest': {'n_estimators': 154, 'max_depth': 20, 'min_samples_split': 5, 'min_samples_leaf': 2, 'bootstrap': False},
+    'LightGBM': {'learning_rate': 0.01, 'max_depth': 50, 'n_estimators': 100, 'num_leaves': 128},
+    'SVM': {'C': 0.7678, 'gamma': 'auto', 'kernel': 'linear'},
+    'LogisticRegression': {'C': 83.2543, 'penalty': 'l1', 'solver': 'saga'}
+}
+
+for model_name, params in best_params.items():
+    for train_index, test_index in outer_cv.split(X, y):
+        X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+        y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+        scaler = MinMaxScaler()
+        min_max_columns = X_train_outer.select_dtypes(include=['int64', 'float']).columns.tolist()
+        X_train_outer[min_max_columns] = scaler.fit_transform(X_train_outer[min_max_columns])
+        X_test_outer[min_max_columns] = scaler.transform(X_test_outer[min_max_columns])
+
+        oversampler = RandomOverSampler(random_state=42)
+        X_train_resampled, y_train_resampled = oversampler.fit_resample(X_train_outer, y_train_outer)
+
+        if model_name == 'RandomForest':
+            model = RandomForestClassifier(random_state=42, **params)
+        elif model_name == 'LightGBM':
+            model = LGBMClassifier(random_state=42, **params)
+        elif model_name == 'SVM':
+            model = SVC(probability=True, random_state=42, **params)
+        elif model_name == 'LogisticRegression':
+            model = LogisticRegression(random_state=42, **params)
+
+        model.fit(X_train_resampled, y_train_resampled)
+
+        predictions = model.predict(X_test_outer)
+        true_labels = y_test_outer
+
+        accuracy = model.score(X_test_outer, y_test_outer)
+        report = classification_report(true_labels, predictions, output_dict=True)
+        precision = report['weighted avg']['precision']
+        recall = report['weighted avg']['recall']
+        f1 = report['weighted avg']['f1-score']
+
+        # AUC-PR
+        precision, recall, _ = precision_recall_curve(true_labels, predictions)
+        pr_auc = auc(recall, precision)
+        
+        # Store results
+        results[model_name]['accuracy'].append(accuracy)
+        results[model_name]['precision'].append(precision)
+        results[model_name]['recall'].append(recall)
+        results[model_name]['f1'].append(f1)
+        results[model_name]['pr_auc'].append(pr_auc)
+        results[model_name]['predictions'].extend(predictions)
+        results[model_name]['true_labels'].extend(true_labels)
+
+
+
+#==================================================================
+#Finding Threshold for all models storing all metrics
+#==================================================================
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
+from sklearn.metrics import classification_report, precision_recall_curve, auc, confusion_matrix
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+label_columns = df.select_dtypes(include=['category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+outer_num_splits = 5 
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+models = ['RandomForest', 'SVM', 'LogisticRegression', 'LightGBM']
+results = {model: {'accuracy': [], 'precision': [], 'recall': [], 'f1': [], 'pr_auc': [], 'predictions': [], 'true_labels': []} for model in models}
+
+best_params = {
+    'RandomForest': {'n_estimators': 154, 'max_depth': 20, 'min_samples_split': 5, 'min_samples_leaf': 2, 'bootstrap': False},
+    'LightGBM': {'learning_rate': 0.01, 'max_depth': 50, 'n_estimators': 100, 'num_leaves': 128},
+    'SVM': {'C': 0.7678, 'gamma': 'auto', 'kernel': 'linear'},
+    'LogisticRegression': {'C': 83.2543, 'penalty': 'l1', 'solver': 'saga'}
+}
+
+best_thresholds = {}
+
+# Perform nested cross-validation for each model
+for model_name, params in best_params.items():
+    for train_index, test_index in outer_cv.split(X, y):
+        X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+        y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+        scaler = MinMaxScaler()
+        min_max_columns = X_train_outer.select_dtypes(include=['int64', 'float']).columns.tolist()
+        X_train_outer[min_max_columns] = scaler.fit_transform(X_train_outer[min_max_columns])
+        X_test_outer[min_max_columns] = scaler.transform(X_test_outer[min_max_columns])
+
+        oversampler = RandomOverSampler(random_state=42)
+        X_train_resampled, y_train_resampled = oversampler.fit_resample(X_train_outer, y_train_outer)
+
+        if model_name == 'RandomForest':
+            model = RandomForestClassifier(random_state=42, **params)
+        elif model_name == 'SVM':
+            model = SVC(probability=True, random_state=42, **params)
+        elif model_name == 'LogisticRegression':
+            model = LogisticRegression(random_state=42, **params)
+        elif model_name == 'LightGBM':
+            model = LGBMClassifier(random_state=42, **params)
+
+        model.fit(X_train_resampled, y_train_resampled)
+        predictions = model.predict(X_test_outer)
+        true_labels = y_test_outer
+
+        accuracy = model.score(X_test_outer, y_test_outer)
+        report = classification_report(true_labels, predictions, output_dict=True)
+        precision = report['weighted avg']['precision']
+        recall = report['weighted avg']['recall']
+        f1 = report['weighted avg']['f1-score']
+
+        precision, recall, _ = precision_recall_curve(true_labels, predictions)
+        pr_auc = auc(recall, precision)
+        
+        results[model_name]['accuracy'].append(accuracy)
+        results[model_name]['precision'].append(precision)
+        results[model_name]['recall'].append(recall)
+        results[model_name]['f1'].append(f1)
+        results[model_name]['pr_auc'].append(pr_auc)
+        results[model_name]['predictions'].extend(predictions)
+        results[model_name]['true_labels'].extend(true_labels)
+        
+        # Get probability predictions
+        prob_predictions = model.predict_proba(X_test_outer)[:, 1]
+    
+        # Initialize to store best threshold and corresponding AUC_PR
+        best_threshold = None
+        best_auc_pr = 0.0
+    
+        # Iterate over threshold values
+        for threshold in np.linspace(0, 1, 100):
+            binary_predictions = (prob_predictions > threshold).astype(int)
+        
+            precision, recall, _ = precision_recall_curve(y_test_outer, binary_predictions)
+        
+            auc_pr = auc(recall, precision)
+        
+            if auc_pr > best_auc_pr:
+                best_auc_pr = auc_pr
+                best_threshold = threshold
+            
+        best_thresholds[model_name] = (best_threshold, best_auc_pr)
+
+# Print AUC_PR
+for model_name, (threshold, auc_pr) in best_thresholds.items():
+    print(f"Model: {model_name}")
+    print("Best Threshold:", threshold)
+    print("Best AUC PR:", auc_pr)
+    print()
+
+
+#======================================================================
+#SHAP
+#======================================================================
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import StratifiedKFold
+from sklearn.ensemble import RandomForestClassifier
+import shap
+import pandas as pd
+
+
+label_columns = df.select_dtypes(include=['category']).columns.tolist()
+label_encoder = LabelEncoder()
+for column in label_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+X = df.drop("stfjbot", axis=1)
+y = df['stfjbot']
+
+outer_num_splits = 5  
+outer_cv = StratifiedKFold(n_splits=outer_num_splits, shuffle=True, random_state=42)
+
+for train_index, test_index in outer_cv.split(X, y):
+    X_train_outer, X_test_outer = X.iloc[train_index], X.iloc[test_index]
+    y_train_outer, y_test_outer = y.iloc[train_index], y.iloc[test_index]
+
+    
+    scaler = MinMaxScaler()
+    min_max_columns = X_train_outer.select_dtypes(include=['int64', 'float']).columns.tolist()
+    X_train_outer[min_max_columns] = scaler.fit_transform(X_train_outer[min_max_columns])
+    X_test_outer[min_max_columns] = scaler.transform(X_test_outer[min_max_columns])
+
+    best_params = {
+        'n_estimators': 154,
+        'max_depth': 20,
+        'min_samples_split': 5,
+        'min_samples_leaf': 2,
+        'bootstrap': False
+    }
+    best_model = RandomForestClassifier(random_state=42, **best_params)
+    best_model.fit(X_train_outer, y_train_outer)
+    
+    explainer = shap.TreeExplainer(best_model, feature_perturbation="interventional")
+    
+    shap_values = explainer.shap_values(X_test_outer)
+
+shap_values = explainer.shap_values(X_test_outer)
+shap.summary_plot(shap_values, X_test_outer, plot_type='violin', show=False)
+plt.title('SHAP Summary Plot')
+plt.show()
+
+#======================================================================
+# Categorized-Positive and Negative Impact
+#======================================================================
+
+# Define feature categories
+feature_categories = {
+    "Demographic": ["agea", "cntry", "gndr", "rshpsts"],
+    "Social": ["hincsrca", "hinctnta", "hincfel", "rehlppl", "hhmmb", "ctzcntr", "domicil"],
+    "Organizational": ["wkhtot", "nacer2", "tporgwk", "emplrel", "estsz", "jbspv", "wkdcorga", "iorgact", "stfjb"],
+    "Family": ["chldhm", "pdwrkp", "hswrkp"],
+    "Personal": ["health", "edulvlb", "stflife", "happy", "fltanx", "slprl", "tmdotwa", "deaimpp"]
+}
+
+# Get feature names
+feature_names = X_test.columns
+
+# Create a dictionary to store SHAP values for each category
+shap_values_by_category = {category: [] for category in feature_categories.keys()}
+for feature, shap_value in zip(feature_names, shap_values):
+    for category, features in feature_categories.items():
+        if feature in features:
+            shap_values_by_category[category].append(shap_value)
+            break
+
+# Percentage of positive and negative contributions 
+percentage_by_category = {}
+for category, values_list in shap_values_by_category.items():
+    total_values = np.concatenate(values_list)
+    positive_percentage = np.mean(total_values > 0) * 100
+    negative_percentage = -np.mean(total_values < 0) * 100  
+    percentage_by_category[category] = {
+        'Positive': positive_percentage,
+        'Negative': negative_percentage,
+    }
+
+# Print 
+for category, percentages in percentage_by_category.items():
+    print(f"Category: {category}")
+    for label, percentage in percentages.items():
+        print(f"{label}: {percentage:.2f}%")
+
+# Plot based on the category
+sorted_categories = sorted(percentage_by_category.items(), key=lambda x: x[1]['Negative'], reverse=True)
+fig, ax = plt.subplots(figsize=(10, 6))
+categories = [category for category, _ in sorted_categories]
+positive_percentages = [percentages['Positive'] for _, percentages in sorted_categories]
+negative_percentages = [percentages['Negative'] for _, percentages in sorted_categories]
+bar_width = 0.35
+index = np.arange(len(categories))
+bar1 = ax.barh(index, positive_percentages, bar_width, label='Positive', color='mediumvioletred')
+bar2 = ax.barh(index, negative_percentages, bar_width, label='Negative', color='royalblue')
+
+ax.set_xlabel('Percentage')
+ax.set_title('Positive and Negative Impact by Category Based on F1')
+ax.set_yticks(index)
+ax.set_yticklabels(categories)
+ax.legend()
+ax.grid(axis='x')
+
+plt.show()
+
+#======================================================================
+# Categorized-Net Impact
+#======================================================================
+# Net percentage by category
+for category, net_percentage in percentage_by_category.items():
+    print(f"Category: {category}")
+    print(f"Net Percentage: {net_percentage:.2f}%")
+
+#bar Plot
+sorted_categories = sorted(percentage_by_category.items(), key=lambda x: x[1])
+fig, ax = plt.subplots(figsize=(10, 6)) 
+categories = [category for category, _ in sorted_categories]
+net_percentages = [net_percentage for _, net_percentage in sorted_categories]
+bar_width = 0.35
+index = np.arange(len(categories))
+bar1 = ax.barh(index, net_percentages, bar_width, color='purple')
+ax.set_xlabel('Net Impact Percentage')
+ax.set_ylabel('Category')
+ax.set_title('Net Impact Percentage by Category Based on F1')
+ax.grid(axis='x')
+plt.show()
+
+
